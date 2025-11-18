@@ -1,0 +1,14 @@
+C:\Users\Em.Kronas\source\repos\supapac\supapac\bin\Debug\net9.0-windows\supapac.exe
+C:\Users\Em.Kronas\source\repos\supapac\supapac\bin\Debug\net9.0-windows\supapac.deps.json
+C:\Users\Em.Kronas\source\repos\supapac\supapac\bin\Debug\net9.0-windows\supapac.runtimeconfig.json
+C:\Users\Em.Kronas\source\repos\supapac\supapac\bin\Debug\net9.0-windows\supapac.dll
+C:\Users\Em.Kronas\source\repos\supapac\supapac\bin\Debug\net9.0-windows\supapac.pdb
+C:\Users\Em.Kronas\source\repos\supapac\supapac\obj\Debug\net9.0-windows\supapac.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Em.Kronas\source\repos\supapac\supapac\obj\Debug\net9.0-windows\supapac.AssemblyInfoInputs.cache
+C:\Users\Em.Kronas\source\repos\supapac\supapac\obj\Debug\net9.0-windows\supapac.AssemblyInfo.cs
+C:\Users\Em.Kronas\source\repos\supapac\supapac\obj\Debug\net9.0-windows\supapac.csproj.CoreCompileInputs.cache
+C:\Users\Em.Kronas\source\repos\supapac\supapac\obj\Debug\net9.0-windows\supapac.dll
+C:\Users\Em.Kronas\source\repos\supapac\supapac\obj\Debug\net9.0-windows\refint\supapac.dll
+C:\Users\Em.Kronas\source\repos\supapac\supapac\obj\Debug\net9.0-windows\supapac.pdb
+C:\Users\Em.Kronas\source\repos\supapac\supapac\obj\Debug\net9.0-windows\supapac.genruntimeconfig.cache
+C:\Users\Em.Kronas\source\repos\supapac\supapac\obj\Debug\net9.0-windows\ref\supapac.dll

@@ -1,107 +1,106 @@
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
+using System.Text;
+using System.Text.Json;
 
-namespace Supapac
+public class HighscoreEntry
 {
-    public static class HighscoreManager
+    public string Name { get; set; }
+    public int Score { get; set; }
+}
+
+public class HighscoreManager
+{
+    private static readonly string FILE_PATH =
+        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "highscores.json");
+
+    public List<HighscoreEntry> Highscores { get; private set; }
+
+    public HighscoreManager()
     {
-        private static readonly string HighscoreFile =
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "highscore.txt");
+        LoadHighscores();
+    }
 
-        public static string BestName { get; private set; } = "Niemand";
-        public static int BestScore { get; private set; } = 0;
+    /// <summary>
+    /// Fügt einen neuen Score hinzu und speichert die besten 3 Highscores.
+    /// </summary>
+    public void AddScore(string name, int score)
+    {
+        Highscores.Add(new HighscoreEntry { Name = name, Score = score });
 
-        static HighscoreManager()
+        Highscores = Highscores
+            .OrderByDescending(h => h.Score)
+            .Take(3)
+            .ToList();
+
+        SaveHighscores();
+    }
+
+    /// <summary>
+    /// Exportiert alle aktuell bekannten Highscores als CSV.
+    /// Format: Platz;Name;Score (UTF-8, Semikolontrenner – gut für Excel/LibreOffice).
+    /// </summary>
+    public void ExportToCsv(string filePath)
+    {
+        var lines = new List<string>();
+        lines.Add("Platz;Name;Score");
+
+        int rank = 1;
+        foreach (var entry in Highscores.OrderByDescending(h => h.Score))
         {
-            Load();
+            string safeName = entry.Name?.Replace(";", ",") ?? string.Empty;
+            lines.Add($"{rank};{safeName};{entry.Score}");
+            rank++;
         }
 
-        private static void Load()
+        File.WriteAllLines(filePath, lines, Encoding.UTF8);
+    }
+
+    private void SaveHighscores()
+    {
+        string json = JsonSerializer.Serialize(
+            Highscores,
+            new JsonSerializerOptions { WriteIndented = true }
+        );
+        File.WriteAllText(FILE_PATH, json);
+    }
+
+    private void LoadHighscores()
+    {
+        if (File.Exists(FILE_PATH))
         {
-            try
-            {
-                if (!File.Exists(HighscoreFile)) return;
-                var lines = File.ReadAllLines(HighscoreFile);
-                if (lines.Length >= 2)
-                {
-                    BestName = lines[0];
-                    int.TryParse(lines[1], out int s);
-                    BestScore = s;
-                }
-            }
-            catch { /* egal */ }
+            string json = File.ReadAllText(FILE_PATH);
+            Highscores = JsonSerializer.Deserialize<List<HighscoreEntry>>(json)
+                          ?? new List<HighscoreEntry>();
         }
-
-        private static void Save()
+        else
         {
-            try
-            {
-                File.WriteAllLines(HighscoreFile, new[]
-                {
-                    BestName,
-                    BestScore.ToString()
-                });
-            }
-            catch { /* egal */ }
-        }
-
-        public static void TrySetHighscore(int score, IWin32Window owner)
-        {
-            if (score <= BestScore) return;
-
-            string name = Prompt.ShowDialog(
-                $"Neuer Highscore: {score}!\nBitte Namen eingeben:",
-                "Neuer Highscore");
-
-            if (string.IsNullOrWhiteSpace(name))
-                name = "Unbekannt";
-
-            BestName = name;
-            BestScore = score;
-            Save();
-
-            MessageBox.Show(owner,
-                $"Glückwunsch {BestName}! Neuer Highscore: {BestScore}",
-                "Highscore", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Highscores = new List<HighscoreEntry>();
         }
     }
 
-    // Kleiner Eingabe-Dialog für Namen
-    public static class Prompt
+    /// <summary>
+    /// Fragt einen Spielernamen ab und speichert den Score in der Highscoreliste.
+    /// Wird am Ende des Spiels aus GameForm aufgerufen.
+    /// </summary>
+    public static void TrySetHighscore(int score, System.Windows.Forms.Form parent)
     {
-        public static string ShowDialog(string text, string caption)
-        {
-            Form prompt = new Form()
-            {
-                Width = 400,
-                Height = 160,
-                FormBorderStyle = FormBorderStyle.FixedDialog,
-                Text = caption,
-                StartPosition = FormStartPosition.CenterScreen,
-                MaximizeBox = false,
-                MinimizeBox = false
-            };
+        string name = "Player";
 
-            Label textLabel = new Label() { Left = 20, Top = 20, Width = 340, Text = text };
-            TextBox inputBox = new TextBox() { Left = 20, Top = 50, Width = 340 };
-            Button confirmation = new Button()
-            {
-                Text = "OK",
-                Left = 280,
-                Width = 80,
-                Top = 80,
-                DialogResult = DialogResult.OK
-            };
+        // Einfacher Name-Dialog (Microsoft.VisualBasic muss als Referenz vorhanden sein)
+        string input = Microsoft.VisualBasic.Interaction.InputBox(
+            "Bitte Namen für die Highscore-Liste eingeben:",
+            "Highscore",
+            "Player"
+        );
 
-            prompt.Controls.Add(textLabel);
-            prompt.Controls.Add(inputBox);
-            prompt.Controls.Add(confirmation);
-            prompt.AcceptButton = confirmation;
+        if (!string.IsNullOrWhiteSpace(input))
+            name = input;
 
-            return prompt.ShowDialog() == DialogResult.OK ? inputBox.Text : "";
-        }
+        var hs = new HighscoreManager();
+        hs.AddScore(name, score);
     }
 }

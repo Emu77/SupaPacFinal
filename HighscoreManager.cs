@@ -1,106 +1,80 @@
-
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 
-public class HighscoreEntry
+namespace supapac;
+
+public static class HighscoreManager
 {
-    public string Name { get; set; }
-    public int Score { get; set; }
-}
+    private static readonly string HighscoreFile =
+        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "highscore.json");
 
-public class HighscoreManager
-{
-    private static readonly string FILE_PATH =
-        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "highscores.json");
+    // Das, was StartForm braucht:
+    public static string BestName { get; private set; } = "Niemand";
+    public static int BestScore { get; private set; } = 0;
 
-    public List<HighscoreEntry> Highscores { get; private set; }
-
-    public HighscoreManager()
+    // interne Hilfsklasse für JSON
+    private class HighscoreData
     {
-        LoadHighscores();
+        public string Name { get; set; } = "Niemand";
+        public int Score { get; set; } = 0;
     }
 
-    /// <summary>
-    /// Fügt einen neuen Score hinzu und speichert die besten 3 Highscores.
-    /// </summary>
-    public void AddScore(string name, int score)
+    static HighscoreManager()
     {
-        Highscores.Add(new HighscoreEntry { Name = name, Score = score });
-
-        Highscores = Highscores
-            .OrderByDescending(h => h.Score)
-            .Take(3)
-            .ToList();
-
-        SaveHighscores();
+        Load();
     }
 
-    /// <summary>
-    /// Exportiert alle aktuell bekannten Highscores als CSV.
-    /// Format: Platz;Name;Score (UTF-8, Semikolontrenner – gut für Excel/LibreOffice).
-    /// </summary>
-    public void ExportToCsv(string filePath)
+    public static void Load()
     {
-        var lines = new List<string>();
-        lines.Add("Platz;Name;Score");
-
-        int rank = 1;
-        foreach (var entry in Highscores.OrderByDescending(h => h.Score))
+        try
         {
-            string safeName = entry.Name?.Replace(";", ",") ?? string.Empty;
-            lines.Add($"{rank};{safeName};{entry.Score}");
-            rank++;
+            if (!File.Exists(HighscoreFile))
+                return;
+
+            string json = File.ReadAllText(HighscoreFile);
+            var data = JsonSerializer.Deserialize<HighscoreData>(json);
+            if (data == null)
+                return;
+
+            BestName = data.Name;
+            BestScore = data.Score;
         }
-
-        File.WriteAllLines(filePath, lines, Encoding.UTF8);
-    }
-
-    private void SaveHighscores()
-    {
-        string json = JsonSerializer.Serialize(
-            Highscores,
-            new JsonSerializerOptions { WriteIndented = true }
-        );
-        File.WriteAllText(FILE_PATH, json);
-    }
-
-    private void LoadHighscores()
-    {
-        if (File.Exists(FILE_PATH))
+        catch
         {
-            string json = File.ReadAllText(FILE_PATH);
-            Highscores = JsonSerializer.Deserialize<List<HighscoreEntry>>(json)
-                          ?? new List<HighscoreEntry>();
-        }
-        else
-        {
-            Highscores = new List<HighscoreEntry>();
+            // Wenn was schiefgeht: einfach Standardwerte behalten
         }
     }
 
-    /// <summary>
-    /// Fragt einen Spielernamen ab und speichert den Score in der Highscoreliste.
-    /// Wird am Ende des Spiels aus GameForm aufgerufen.
-    /// </summary>
-    public static void TrySetHighscore(int score, System.Windows.Forms.Form parent)
+    public static void Save()
     {
-        string name = "Player";
+        try
+        {
+            var data = new HighscoreData
+            {
+                Name = BestName,
+                Score = BestScore
+            };
 
-        // Einfacher Name-Dialog (Microsoft.VisualBasic muss als Referenz vorhanden sein)
-        string input = Microsoft.VisualBasic.Interaction.InputBox(
-            "Bitte Namen für die Highscore-Liste eingeben:",
-            "Highscore",
-            "Player"
-        );
+            string json = JsonSerializer.Serialize(
+                data,
+                new JsonSerializerOptions { WriteIndented = true });
 
-        if (!string.IsNullOrWhiteSpace(input))
-            name = input;
+            File.WriteAllText(HighscoreFile, json);
+        }
+        catch
+        {
+        }
+    }
 
-        var hs = new HighscoreManager();
-        hs.AddScore(name, score);
+    // Highscore setzen, wenn Score besser ist
+    public static void SetHighscore(string name, int score)
+    {
+        if (score <= BestScore)
+            return;
+
+        BestName = string.IsNullOrWhiteSpace(name) ? "Unbekannt" : name.Trim();
+        BestScore = score;
+        Save();
     }
 }

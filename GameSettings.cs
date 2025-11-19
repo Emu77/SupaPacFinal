@@ -1,4 +1,4 @@
-namespace Supapac
+namespace supapac   // WICHTIG: so lassen, dein Projekt heißt supapac
 {
     public enum Difficulty
     {
@@ -27,9 +27,9 @@ namespace Supapac
             {
                 switch (Difficulty)
                 {
-                    case Difficulty.Easy: return 190;
-                    case Difficulty.Hard: return 110;
-                    default: return 140;
+                    case Difficulty.Easy:  return 190;
+                    case Difficulty.Hard:  return 110;
+                    default:               return 140;
                 }
             }
         }
@@ -40,9 +40,9 @@ namespace Supapac
             {
                 switch (Scale)
                 {
-                    case BoardScale.Small: return 20;
-                    case BoardScale.Large: return 28;
-                    default: return 24;
+                    case BoardScale.Small:  return 20;
+                    case BoardScale.Large:  return 28;
+                    default:                return 24;
                 }
             }
         }

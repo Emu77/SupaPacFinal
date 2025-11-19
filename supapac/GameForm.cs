@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using supapac;
+
 
 namespace Supapac
 {
@@ -51,7 +53,7 @@ namespace Supapac
 
         public GameForm()
         {
-            Text = "Pacman Deluxe";
+            Text = "SupaPac";
             BackColor = Color.Black;
             DoubleBuffered = true;
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -714,7 +716,7 @@ namespace Supapac
                 MessageBoxIcon.Information);
 
             // Highscore prüfen
-            HighscoreManager.TrySetHighscore(score, this);
+            HighscoreManager.SetHighscore(HighscoreManager.BestName, score);
         }
 
         protected override void OnPaint(PaintEventArgs e)

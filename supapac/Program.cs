@@ -1,7 +1,7 @@
 using System;
 using System.Windows.Forms;
 
-namespace PacmanGame
+namespace Supapac
 {
     internal static class Program
     {
@@ -10,7 +10,7 @@ namespace PacmanGame
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new GameForm());
+            Application.Run(new StartForm());
         }
     }
 }

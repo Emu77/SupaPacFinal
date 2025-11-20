@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("supapac")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a5469d2438b616a5e5ecbb83fcb6e0ce172c6562")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+159e91d5327cbda8fe5fba90c9f706dc7a374222")]
 [assembly: System.Reflection.AssemblyProductAttribute("supapac")]
 [assembly: System.Reflection.AssemblyTitleAttribute("supapac")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
